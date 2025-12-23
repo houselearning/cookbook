@@ -51,25 +51,35 @@ auth.onAuthStateChanged(async (user) => {
   console.log("DEBUG: User logged in:", user.uid);
 
   try {
-    console.log("DEBUG: Reading cookbook_users/" + user.uid);
-    const userDoc = await db.collection("cookbook_users").doc(user.uid).get();
-    console.log("DEBUG: cookbook_users read OK:", userDoc.exists);
+    // 1) cookbook_users doc
+    const cookbookPath = `cookbook_users/${user.uid}`;
+    console.log("DEBUG: Attempting read:", cookbookPath);
+    const cbSnap = await db.doc(cookbookPath).get();
+    console.log("DEBUG: Read result:", cookbookPath, "exists=", cbSnap.exists);
 
-    console.log("DEBUG: Reading settings/global");
-    const settingsDoc = await db.collection("settings").doc("global").get();
-    console.log("DEBUG: settings/global read OK:", settingsDoc.exists);
+    // 2) settings/global
+    const settingsPath = `settings/global`;
+    console.log("DEBUG: Attempting read:", settingsPath);
+    const settingsSnap = await db.doc(settingsPath).get();
+    console.log("DEBUG: Read result:", settingsPath, "exists=", settingsSnap.exists);
 
-    console.log("DEBUG: Loading recipes…");
+    // 3) recipes query (daily)
+    console.log("DEBUG: Attempting query: recipes where type==daily");
+    const qSnap = await db.collection("recipes").where("type", "==", "daily").limit(1).get();
+    console.log("DEBUG: Query result size:", qSnap.size);
+
+    // If we reach here, initialization reads succeeded
+    console.log("DEBUG: All initial reads succeeded. Proceeding with app init.");
+    // Continue your normal initialization (loadRecipesForTab etc.)
     await loadRecipesForTab("daily");
-    console.log("DEBUG: Recipes loaded OK");
 
   } catch (err) {
-    console.error("DEBUG: Firestore read failed:", err);
-    showBlocked("Error initializing cookbook.");
+    console.error("DEBUG: Firestore read failed at step above. Error:", err);
+    // Show a helpful message in UI but keep the debug console output
+    showBlocked("Error initializing cookbook: check console for DEBUG output.");
     cookbookMain.style.display = "none";
   }
 });
-
 
   currentUser = user;
   userInfoEl.textContent = user.email || user.displayName || "User";
