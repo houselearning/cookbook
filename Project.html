@@ -57,19 +57,19 @@
 	// filepath: d:\Downloads\Project.html
 	// Firebase config placeholder -- replace with project config
 	const firebaseConfig = {
-		apiKey: "API_KEY",
-		authDomain: "PROJECT.firebaseapp.com",
-		projectId: "PROJECT",
-		storageBucket: "PROJECT.appspot.com",
-		messagingSenderId: "SENDER_ID",
-		appId: "APP_ID"
+  apiKey: "AIzaSyDoXSwni65CuY1_32ZE8B1nwfQO_3VNpTw",
+  authDomain: "contract-center-llc-10.firebaseapp.com",
+  projectId: "contract-center-llc-10",
+  storageBucket: "contract-center-llc-10.firebasestorage.app",
+  messagingSenderId: "323221512767",
+  appId: "1:323221512767:web:6421260f875997dbf64e8a",
 	};
 	firebase.initializeApp(firebaseConfig);
 	const auth = firebase.auth();
 	const db = firebase.firestore();
 
 	// App configuration: endpoints (set to your Apps Script / server endpoints)
-	const APPSCRIPT_BASE = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec"; // likes/ratings/reports
+	const APPSCRIPT_BASE = "https://script.google.com/macros/s/AKfycbxB2T81uHWi_ytjLJ6Z1WY1iopptGrIudfI_sceLqFQw4vz95t0Q_PRJEtP4ZwZkJzg/exec"; // likes/ratings/reports
 	const SERVER_API = "https://your-server.example.com"; // optional server endpoints
 
 	const md = window.markdownit();
