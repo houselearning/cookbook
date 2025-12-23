@@ -16,4 +16,5 @@ const db = firebase.firestore();
 
 // Combined Google Apps Script endpoint for likes, ratings, and reports
 // Deploy CookbookInteractions.gs as a web app and paste the URL here
-const GSCRIPT_URL = "https://script.google.com/macros/s/AKfycbwN9e8U_1gU0X-Q0Gafzpjp_73Z0QuAfaWfHQyb9Cz5BSQxe5wDRHPxjiBey3goOmSPYQ/exec";
+const GSCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJSKuahtatMEGdsNQ_kzu52LWVpWQnm5yb9yHvLwTrocW8bOZOUJKRh6rZWunNdZLe7w/exec";
+
