@@ -1,6 +1,14 @@
 // Configuration (Replace with your keys)
-const firebaseConfig = { /* Your Config */ };
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxB2T81uHWi_ytjLJ6Z1WY1iopptGrIudfI_sceLqFQw4vz95t0Q_PRJEtP4ZwZkJzg/exec";
+const firebaseConfig = {
+      apiKey: "AIzaSyDoXSwni65CuY1_32ZE8B1nwfQO_3VNpTw",
+  authDomain: "contract-center-llc-10.firebaseapp.com",
+  projectId: "contract-center-llc-10",
+  storageBucket: "contract-center-llc-10.firebasestorage.app",
+  messagingSenderId: "323221512767",
+  appId: "1:323221512767:web:6421260f875997dbf64e8a",
+  measurementId: "G-S2RJ0C6BWH"
+};
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzEUs3o9q39VYpSb_s6K51vsbMi4gaOxjDmK2-OxmkSW8iAvxEDdBOs6t0LQfpigB8x7g/exec";
 
 // 1. Authentication & Ban Logic
 firebase.auth().onAuthStateChanged(user => {
@@ -55,3 +63,4 @@ function printRecipe() {
     doc.text(content, 10, 20);
     doc.save("recipe.pdf");
 }
+
