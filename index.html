@@ -4,12 +4,13 @@
   <meta charset="UTF-8">
   <title>HouseLearning Cookbook</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Firebase SDKs -->
+
+  <!-- Firebase SDKs (compat for simplicity) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-  <!-- jsPDF for PDFs -->
+  <!-- jsPDF for PDF export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <link rel="stylesheet" href="cookbook.css">
@@ -46,7 +47,7 @@
         </div>
 
         <article id="recipe-content" class="recipe-content">
-          <!-- Recipe HTML will be injected here -->
+          <!-- Recipe HTML content injected here -->
         </article>
 
         <div class="recipe-actions">
@@ -64,12 +65,11 @@
     </section>
   </main>
 
-  <!-- Modal: Rating -->
+  <!-- Rating modal -->
   <div id="rating-modal" class="hl-modal hidden">
     <div class="hl-modal-content">
       <h3>Rate this recipe</h3>
       <div id="star-container" class="star-container">
-        <!-- 5 stars -->
         <span data-value="1" class="star">★</span>
         <span data-value="2" class="star">★</span>
         <span data-value="3" class="star">★</span>
@@ -84,7 +84,7 @@
     </div>
   </div>
 
-  <!-- Modal: Report -->
+  <!-- Report modal -->
   <div id="report-modal" class="hl-modal hidden">
     <div class="hl-modal-content">
       <h3>Report this recipe</h3>
@@ -99,7 +99,7 @@
     </div>
   </div>
 
-  <!-- Modal: Blocked / Banned notice -->
+  <!-- Blocked / banned overlay -->
   <div id="blocked-overlay" class="hl-overlay hidden">
     <div class="hl-overlay-content">
       <h2>Cookbook Unavailable</h2>
