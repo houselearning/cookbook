@@ -1,25 +1,16 @@
-name: Daily Recipe Update
+name: Daily Recipe Automation
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs at midnight UTC
-  workflow_dispatch:
-
+    - cron: '0 0 * * *'
 jobs:
-  build:
+  run-ai:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v4
-      - name: Install dependencies
-        run: pip install requests
-      - name: Run Generator
+      - name: Generate
         env:
-          HF_API_KEY: ${{ secrets.HF_API_KEY }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          FIREBASE_KEY: ${{ secrets.FIREBASE_KEY }}
         run: python generate_daily.py
-      - name: Commit and Push
-        run: |
-          git config --global user.name 'HouseLearningBot'
-          git add daily_recipe.json
-          git commit -m "Update Daily Recipe"
-          git push
