@@ -42,10 +42,34 @@ let selectedStars = 0;
 // Auth state listener
 auth.onAuthStateChanged(async (user) => {
   if (!user) {
+    console.log("DEBUG: No user logged in");
     showBlocked("You must be signed in to view the HouseLearning Cookbook.");
     cookbookMain.style.display = "none";
     return;
   }
+
+  console.log("DEBUG: User logged in:", user.uid);
+
+  try {
+    console.log("DEBUG: Reading cookbook_users/" + user.uid);
+    const userDoc = await db.collection("cookbook_users").doc(user.uid).get();
+    console.log("DEBUG: cookbook_users read OK:", userDoc.exists);
+
+    console.log("DEBUG: Reading settings/global");
+    const settingsDoc = await db.collection("settings").doc("global").get();
+    console.log("DEBUG: settings/global read OK:", settingsDoc.exists);
+
+    console.log("DEBUG: Loading recipes…");
+    await loadRecipesForTab("daily");
+    console.log("DEBUG: Recipes loaded OK");
+
+  } catch (err) {
+    console.error("DEBUG: Firestore read failed:", err);
+    showBlocked("Error initializing cookbook.");
+    cookbookMain.style.display = "none";
+  }
+});
+
 
   currentUser = user;
   userInfoEl.textContent = user.email || user.displayName || "User";
