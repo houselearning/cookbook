@@ -1,0 +1,25 @@
+name: Daily Recipe Update
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs at midnight UTC
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+      - name: Install dependencies
+        run: pip install requests
+      - name: Run Generator
+        env:
+          HF_API_KEY: ${{ secrets.HF_API_KEY }}
+        run: python generate_daily.py
+      - name: Commit and Push
+        run: |
+          git config --global user.name 'HouseLearningBot'
+          git add daily_recipe.json
+          git commit -m "Update Daily Recipe"
+          git push
