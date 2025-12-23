@@ -31,9 +31,6 @@ const reportText = document.getElementById("report-text");
 
 const assignedTab = document.getElementById("assigned-tab");
 
-// Combined Google Apps Script endpoint
-const GSCRIPT_URL = "https://script.google.com/macros/s/AKfycbw1m71z3p-S6VEt-wpPNIhMexeey_PKWvAmYQsj_SeuhgrpK18kOru22-SET4Pn1uHRnA/exec";
-
 // App state
 let currentUser = null;
 let currentRole = null;
@@ -58,26 +55,32 @@ auth.onAuthStateChanged(async (user) => {
     const userData = userDoc.exists ? userDoc.data() : {};
     currentRole = userData.role || "student";
 
+    // Check banned
     if (userData.banned) {
       const expires = userData.banExpiresAt?.toDate?.() || null;
       let message = "Your account is banned from using the Cookbook.";
-      if (expires) message += ` Ban expires on ${expires.toLocaleString()}.`;
+      if (expires) {
+        message += ` Ban expires on ${expires.toLocaleString()}.`;
+      }
       showBlocked(message);
       cookbookMain.style.display = "none";
       return;
     }
 
+    // Check global Cookbook block
     const settingsDoc = await db.collection("settings").doc("global").get();
     const settings = settingsDoc.exists ? settingsDoc.data() : {};
     if (settings.cookbookBlocked && currentRole !== "admin" && currentRole !== "teacher") {
-      showBlocked("The Cookbook is currently unavailable.");
+      showBlocked("The Cookbook is currently unavailable. Please check back later.");
       cookbookMain.style.display = "none";
       return;
     }
 
+    // Show main UI
     cookbookMain.style.display = "block";
     blockedOverlay.classList.add("hidden");
 
+    // Hide Assigned tab for non-students/teachers if desired
     if (currentRole !== "student" && currentRole !== "teacher") {
       assignedTab.style.display = "none";
     }
@@ -91,7 +94,9 @@ auth.onAuthStateChanged(async (user) => {
 });
 
 // Logout
-logoutBtn.addEventListener("click", () => auth.signOut());
+logoutBtn.addEventListener("click", () => {
+  auth.signOut();
+});
 
 // Show blocked overlay
 function showBlocked(message) {
@@ -143,7 +148,10 @@ async function loadRecipesForTab(tabName) {
       recipeListEl.innerHTML = "<li>Assigned recipes are only for students and teachers.</li>";
       return;
     }
-    query = query.where("type", "==", "assigned").orderBy("createdAt", "desc").limit(50);
+    query = query
+      .where("type", "==", "assigned")
+      .orderBy("createdAt", "desc")
+      .limit(50);
   }
 
   const snap = await query.get();
@@ -207,16 +215,19 @@ printBtn.addEventListener("click", () => {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF("p", "pt", "a4");
 
+  // Watermark
   doc.setGState(doc.GState({ opacity: 0.08 }));
   doc.setFontSize(60);
   doc.setTextColor(150, 150, 150);
   doc.text("House Learning", 80, 300, { angle: 30 });
   doc.setGState(doc.GState({ opacity: 1 }));
 
+  // Title
   doc.setFontSize(18);
   doc.setTextColor(20, 20, 20);
   doc.text(currentRecipe.title, 40, 80);
 
+  // Content (simple: innerText from HTML)
   const text = recipeContentEl.innerText || "";
   const lines = doc.splitTextToSize(text, 500);
   doc.setFontSize(12);
@@ -225,7 +236,7 @@ printBtn.addEventListener("click", () => {
   doc.save(`${currentRecipe.title.replace(/\s+/g, "_")}.pdf`);
 });
 
-// Like
+// Like (Google Apps Script + Sheets)
 likeBtn.addEventListener("click", async () => {
   if (!currentRecipe) return;
   try {
@@ -247,7 +258,7 @@ likeBtn.addEventListener("click", async () => {
   }
 });
 
-// Favorite
+// Favorite (Firestore)
 favoriteBtn.addEventListener("click", async () => {
   if (!currentRecipe) return;
   try {
