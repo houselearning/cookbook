@@ -1,6 +1,8 @@
-// Configuration (Replace with your keys)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+
 const firebaseConfig = {
-      apiKey: "AIzaSyDoXSwni65CuY1_32ZE8B1nwfQO_3VNpTw",
+        apiKey: "AIzaSyDoXSwni65CuY1_32ZE8B1nwfQO_3VNpTw",
   authDomain: "contract-center-llc-10.firebaseapp.com",
   projectId: "contract-center-llc-10",
   storageBucket: "contract-center-llc-10.firebasestorage.app",
@@ -8,59 +10,95 @@ const firebaseConfig = {
   appId: "1:323221512767:web:6421260f875997dbf64e8a",
   measurementId: "G-S2RJ0C6BWH"
 };
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzEUs3o9q39VYpSb_s6K51vsbMi4gaOxjDmK2-OxmkSW8iAvxEDdBOs6t0LQfpigB8x7g/exec";
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwGTnULFpGISqlRnxyxpgNz9cMeC6RDFitw5w9ycZa72ZMZ64JnSQ32sNapsQyXhHq9JA/exec";
 
-// 1. Authentication & Ban Logic
-firebase.auth().onAuthStateChanged(user => {
-    if (!user) {
-        window.location.href = "/auth"; // Force sign-in
-    } else {
-        checkUserStatus(user.uid);
-    }
-});
+let currentRecipe = null;
+let currentUID = "USER_ID_FROM_AUTH"; // Integration point for Firebase Auth
 
-async function checkUserStatus(uid) {
-    const snapshot = await firebase.database().ref(`users/${uid}`).once('value');
-    const userData = snapshot.val();
+// --- CORE FUNCTIONS ---
 
-    if (userData.isBanned && Date.now() < userData.banUntil) {
-        alert("Account Suspended. Ban expires: " + new Date(userData.banUntil));
-        firebase.auth().signOut();
-    }
-    loadDailyRecipe();
-}
-
-// 2. Load and Format Recipe
-async function loadDailyRecipe() {
-    const snap = await firebase.database().ref('daily_recipes/today').once('value');
-    const data = snap.val();
+window.setSection = async (section) => {
+    // 1. Role Based Access Check
+    const userSnap = await get(ref(db, `users/${currentUID}`));
+    const userData = userSnap.val();
     
-    // Parse Markdown to HTML via marked.js
+    if (section === 'assigned' && userData.role === 'guest') {
+        alert("Access restricted to Students and Teachers.");
+        return;
+    }
+
+    // 2. Load Content
+    if (section === 'daily') {
+        const recipeSnap = await get(ref(db, 'daily_recipes/today'));
+        currentRecipe = recipeSnap.val();
+        renderRecipe(currentRecipe);
+    }
+    // Update UI tabs
+    document.querySelectorAll('.sections button').forEach(b => b.classList.remove('active'));
+    document.getElementById(`nav-${section}`).classList.add('active');
+};
+
+function renderRecipe(data) {
     const html = marked.parse(data.content);
-    document.getElementById('recipe-display-area').innerHTML = html;
+    document.getElementById('recipe-body-html').innerHTML = html;
 }
 
-// 3. Interactions
-async function submitLike() {
-    const payload = { type: 'LIKE', userId: firebase.auth().currentUser.uid, recipeId: 'today' };
-    await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
-    alert("Recipe Liked!");
-}
+// --- INTERACTIONS ---
 
-function printRecipe() {
+window.handleLike = async () => {
+    // Likes go to Google Sheets
+    await fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify({ type: 'LIKE', userId: currentUID, recipeId: currentRecipe.id })
+    });
+    alert("Liked! Data saved to House Learning Sheets.");
+};
+
+window.handleFavorite = async () => {
+    // Favorites go to Firebase (Non-Firestore)
+    const favRef = ref(db, `users/${currentUID}/favorites/${currentRecipe.id}`);
+    await set(favRef, true);
+    alert("Added to My Recipes!");
+};
+
+window.handlePrint = () => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     
     // Watermark
-    doc.setTextColor(220);
-    doc.setFontSize(40);
-    doc.text("House Learning", 40, 150, { angle: 45 });
+    doc.setTextColor(230, 230, 230);
+    doc.setFontSize(60);
+    doc.text("House Learning", 35, 150, { angle: 45 });
     
     // Content
-    doc.setTextColor(0);
+    doc.setTextColor(0, 0, 0);
     doc.setFontSize(12);
-    const content = document.getElementById('recipe-content').innerText;
-    doc.text(content, 10, 20);
-    doc.save("recipe.pdf");
+    const text = document.getElementById('recipe-body-html').innerText;
+    const splitText = doc.splitTextToSize(text, 180);
+    doc.text(splitText, 15, 20);
+    doc.save("Recipe.pdf");
+};
+
+// --- REPORTING & PROGRESSIVE BANS ---
+
+window.openReport = () => {
+    const reason = prompt("Describe the issue with this recipe:");
+    if (reason) processReport(reason);
+};
+
+async function processReport(reason) {
+    const userRef = ref(db, `users/${currentUID}`);
+    const snap = await get(userRef);
+    const data = snap.val() || { offenses: 0 };
+
+    // This logic is usually handled by the Community Team, but here is the automated response:
+    alert("Report submitted. Community Team will respond in 2-3 days.");
+    
+    // Example of triggering a ban if the report is flagged as "False" by an admin later:
+    // This part would be in your Admin Dashboard logic.
 }
 
+// Initial Boot
+window.setSection('daily');
