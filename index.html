@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Learning Cookbook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* PDF Watermark Style - Only active during print */
+        .pdf-watermark {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 80px;
+            color: rgba(0, 0, 0, 0.05);
+            white-space: nowrap;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        .printing .pdf-watermark { display: block; }
+        
+        .recipe-content h1 { font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; color: #2d3748; }
+        .recipe-content h2 { font-size: 1.25rem; font-weight: bold; margin-top: 1rem; color: #4a5568; }
+        .recipe-content ul { list-style-type: disc; margin-left: 1.5rem; }
+    </style>
+</head>
+<body class="bg-stone-50 min-h-screen font-sans">
+
+    <nav class="bg-white border-b border-stone-200 p-4">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold text-orange-700"><i class="fas fa-utensils mr-2"></i>House Learning Cookbook</h1>
+            <div id="auth-status" class="text-sm text-gray-500">Checking credentials...</div>
+        </div>
+    </nav>
+
+    <main id="cookbook-ui" class="hidden max-w-5xl mx-auto p-6">
+        
+        <div class="flex space-x-4 mb-8 border-b border-gray-200">
+            <button onclick="switchTab('daily')" class="tab-btn px-4 py-2 border-b-2 border-orange-600 font-medium" id="tab-daily">Daily Recipe</button>
+            <button onclick="switchTab('my')" class="tab-btn px-4 py-2 text-gray-500 hover:text-orange-600" id="tab-my">My Recipes</button>
+            <button onclick="switchTab('assigned')" class="tab-btn px-4 py-2 text-gray-500 hover:text-orange-600 hidden" id="tab-assigned">Assigned</button>
+        </div>
+
+        <div id="recipe-card" class="bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden relative">
+            <div class="pdf-watermark">House Learning</div>
+            
+            <div class="p-8">
+                <div class="flex justify-between items-start mb-6">
+                    <div id="recipe-header">
+                        <span id="recipe-tag" class="bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded uppercase">Daily Pick</span>
+                        <h2 id="recipe-title" class="text-3xl font-serif mt-2">Loading Daily Recipe...</h2>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="printRecipe()" class="p-2 text-gray-400 hover:text-blue-600" title="Print PDF"><i class="fas fa-print"></i></button>
+                        <button onclick="handleInteraction('favorite')" class="p-2 text-gray-400 hover:text-red-500" title="Favorite"><i class="fas fa-heart"></i></button>
+                    </div>
+                </div>
+
+                <div id="recipe-body" class="recipe-content text-gray-700 leading-relaxed">
+                    </div>
+
+                <div class="mt-8 pt-6 border-t border-gray-100 flex items-center justify-between">
+                    <div class="flex space-x-6">
+                        <button onclick="handleInteraction('like')" class="flex items-center text-gray-500 hover:text-blue-600">
+                            <i class="far fa-thumbs-up mr-2"></i> <span id="like-count">Helpful</span>
+                        </button>
+                        <button onclick="openModal('rate')" class="flex items-center text-gray-500 hover:text-yellow-500">
+                            <i class="far fa-star mr-2"></i> Rate
+                        </button>
+                    </div>
+                    <button onclick="openModal('report')" class="text-xs text-gray-400 hover:text-red-500 underline uppercase tracking-widest">
+                        Report Issue
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="modal-overlay" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+            <h3 id="modal-title" class="text-lg font-bold mb-4">Title</h3>
+            <div id="modal-content"></div>
+            <div class="mt-6 flex justify-end space-x-3">
+                <button onclick="closeModal()" class="px-4 py-2 text-gray-500">Cancel</button>
+                <button id="modal-submit" class="px-4 py-2 bg-orange-600 text-white rounded">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const APPS_SCRIPT_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL";
+        const DAILY_RECIPE_JSON = "daily_recipe.json"; // Generated by GitHub Action
+        
+        // Mock User State (In production, get this from Firebase Auth)
+        const currentUser = {
+            id: "user_123",
+            role: "student", // change to 'admin' or 'teacher' to see assigned
+            isSignedOut: false,
+            isBlocked: false
+        };
+
+        // Initialize App
+        window.onload = () => {
+            if (currentUser.isSignedOut) {
+                document.body.innerHTML = "<div class='p-20 text-center'>Access Denied. Please sign in.</div>";
+                return;
+            }
+            
+            document.getElementById('cookbook-ui').classList.remove('hidden');
+            document.getElementById('auth-status').innerText = `Logged in as ${currentUser.role}`;
+            
+            if (currentUser.role === 'teacher' || currentUser.role === 'student') {
+                document.getElementById('tab-assigned').classList.remove('hidden');
+            }
+
+            loadDailyRecipe();
+        };
+
+        // Load Recipe via Markdown
+        async function loadDailyRecipe() {
+            try {
+                const response = await fetch(DAILY_RECIPE_JSON);
+                const data = await response.json();
+                
+                const converter = new showdown.Converter();
+                const html = converter.makeHtml(data.content);
+                
+                document.getElementById('recipe-title').innerText = `Healthy ${data.ingredient}`;
+                document.getElementById('recipe-body').innerHTML = html;
+            } catch (e) {
+                document.getElementById('recipe-body').innerText = "Failed to load the daily recipe. Please check back later.";
+            }
+        }
+
+        // Section Switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('border-b-2', 'border-orange-600', 'text-black'));
+            document.getElementById(`tab-${tab}`).classList.add('border-b-2', 'border-orange-600', 'text-black');
+            
+            if (tab === 'my') {
+                document.getElementById('recipe-body').innerHTML = "<p class='italic text-gray-400'>Your favorited recipes will appear here.</p>";
+                document.getElementById('recipe-title').innerText = "My Saved Recipes";
+            } else if (tab === 'daily') {
+                loadDailyRecipe();
+            }
+        }
+
+        // Print to PDF with Watermark
+        function printRecipe() {
+            const element = document.getElementById('recipe-card');
+            element.classList.add('printing'); // Show watermark
+            
+            const opt = {
+                margin: 0.5,
+                filename: 'HouseLearning-Recipe.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.classList.remove('printing'); // Hide watermark after print
+            });
+        }
+
+        // Interaction Handler (Likes/Favorites)
+        async function handleInteraction(type) {
+            if (type === 'favorite') {
+                // Firebase Realtime DB logic would go here
+                alert("Saved to My Recipes (Firebase)");
+            } else if (type === 'like') {
+                // Google Apps Script logic
+                alert("Like recorded (Google Sheets)");
+            }
+        }
+
+        // Modal Logic
+        function openModal(type) {
+            const overlay = document.getElementById('modal-overlay');
+            const title = document.getElementById('modal-title');
+            const content = document.getElementById('modal-content');
+            overlay.classList.remove('hidden');
+
+            if (type === 'rate') {
+                title.innerText = "Rate this Recipe";
+                content.innerHTML = `
+                    <div class='flex space-x-2 mb-4 text-2xl text-yellow-400'>
+                        <i class="far fa-star cursor-pointer"></i><i class="far fa-star cursor-pointer"></i><i class="far fa-star cursor-pointer"></i><i class="far fa-star cursor-pointer"></i><i class="far fa-star cursor-pointer"></i>
+                    </div>
+                    <textarea class="w-full border p-2 text-sm" placeholder="Optional comments..."></textarea>
+                `;
+            } else if (type === 'report') {
+                title.innerText = "Report Content";
+                content.innerHTML = `
+                    <p class="text-xs text-red-500 mb-4 font-bold">WARNING: False reports result in account bans.</p>
+                    <select class="w-full border p-2 mb-2">
+                        <option>Incorrect Ingredients</option>
+                        <option>Inappropriate Language</option>
+                        <option>Formatting Error</option>
+                    </select>
+                    <textarea class="w-full border p-2 text-sm" placeholder="Describe the issue..."></textarea>
+                `;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
