@@ -124,20 +124,24 @@
         };
 
         // Load Recipe via Markdown
-        async function loadDailyRecipe() {
-            try {
-                const response = await fetch(DAILY_RECIPE_JSON);
-                const data = await response.json();
-                
-                const converter = new showdown.Converter();
-                const html = converter.makeHtml(data.content);
-                
-                document.getElementById('recipe-title').innerText = `Healthy ${data.ingredient}`;
-                document.getElementById('recipe-body').innerHTML = html;
-            } catch (e) {
-                document.getElementById('recipe-body').innerText = "Failed to load the daily recipe. Please check back later.";
-            }
-        }
+async function loadDailyRecipe() {
+    try {
+        const response = await fetch(DAILY_RECIPE_JSON);
+        const data = await response.json();
+        
+        const converter = new showdown.Converter();
+        const html = converter.makeHtml(data.content);
+        
+        // Add the real recipe image
+        const imageHtml = `<img src="${data.image}" class="w-full h-64 object-cover rounded-lg mb-6 shadow-md" alt="Recipe Image">`;
+        
+        document.getElementById('recipe-title').innerText = data.title;
+        document.getElementById('recipe-body').innerHTML = imageHtml + html;
+        
+    } catch (e) {
+        document.getElementById('recipe-body').innerText = "Failed to load.";
+    }
+}
 
         // Section Switching
         function switchTab(tab) {
