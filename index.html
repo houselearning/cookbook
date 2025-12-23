@@ -7,55 +7,60 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-database.js"></script>
+    <script type="module" src="app.js"></script>
 </head>
 <body>
-    <header>
-        <h1>HouseLearning Cookbook</h1>
-        <div id="user-profile" class="user-icon">user icon</div>
-    </header>
-
-    <nav class="top-nav">
-        <button onclick="switchSection('daily')" class="active">DAILY RECIPIES</button>
-        <button onclick="switchSection('my')">MY RECIPIES</button>
-        <button onclick="switchSection('assigned')">ASSIGNED RECIPIES</button>
-    </nav>
-
-    <main class="main-container">
-        <aside class="sidebar">
-            <h3>past recipe list</h3>
-            <ul id="past-recipes-list"></ul>
-        </aside>
-
-        <section class="recipe-view">
-            <div id="recipe-display-area">
-                <div class="recipe-hero">recipe image</div>
-                <div id="recipe-content">
-                    <h2 id="r-name">recipe name</h2>
-                    <p id="r-info">cook info</p>
-                    <hr>
-                    <div id="r-ingredients">ingredients</div>
-                    <hr>
-                    <div id="r-notes">cook notes</div>
-                </div>
-                <p class="sources-text">sources</p>
+    <div id="app-container">
+        <header>
+            <div class="header-left">
+                <h1>HouseLearning Cookbook</h1>
+                <nav class="sections">
+                    <button id="nav-daily" class="active" onclick="window.setSection('daily')">DAILY RECIPIES</button>
+                    <button id="nav-my" onclick="window.setSection('my')">MY RECIPIES</button>
+                    <button id="nav-assigned" onclick="window.setSection('assigned')">ASSIGNED RECIPIES</button>
+                </nav>
             </div>
-
-            <div class="interaction-box">
-                <button onclick="printRecipe()">Print</button>
-                <button onclick="submitLike()">Like</button>
-                <button onclick="openRateDialog()">Rate</button>
-                <button onclick="toggleFavorite()">Favorite</button>
-                <button onclick="openReportDialog()">Report</button>
-                <button onclick="shareRecipe()">Share</button>
-                <div class="stats">
-                    <span id="like-count">0</span> likes <span id="share-count">0</span> shares
-                </div>
+            <div class="user-status">
+                <div class="user-avatar" id="user-icon">👤</div>
             </div>
-        </section>
-    </main>
+        </header>
 
-    <script src="app.js"></script>
+        <main>
+            <aside id="history-sidebar">
+                <h3>Past Recipe List</h3>
+                <div id="past-list">Loading history...</div>
+            </aside>
+
+            <section id="recipe-card">
+                <div class="recipe-image-container">
+                    <div id="recipe-img-placeholder">
+                        <span id="recipe-img-text">AI Generated Visual Representation</span>
+                    </div>
+                </div>
+
+                <div class="recipe-details">
+                    <div id="recipe-body-html">
+                        </div>
+                    <div class="sources">Sources: House Learning AI Engine (Hugging Face)</div>
+                </div>
+
+                <div class="interaction-menu">
+                    <button onclick="window.handlePrint()">Print</button>
+                    <button onclick="window.handleLike()">Like</button>
+                    <button onclick="window.openRate()">Rate</button>
+                    <button onclick="window.handleFavorite()">Favorite</button>
+                    <button onclick="window.openReport()" class="report-btn">Report</button>
+                    <button onclick="window.handleShare()">Share</button>
+                    <div class="stats-panel">
+                        <span id="like-count">0</span> likes | <span id="share-count">0</span> shares
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="modal-overlay" class="hidden">
+        <div id="modal-content"></div>
+    </div>
 </body>
 </html>
