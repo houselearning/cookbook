@@ -1,4 +1,6 @@
-// DOM elements
+// ===============================
+// DOM ELEMENTS
+// ===============================
 const userInfoEl = document.getElementById("user-info");
 const logoutBtn = document.getElementById("logout-btn");
 const cookbookMain = document.getElementById("cookbook-main");
@@ -31,15 +33,27 @@ const reportText = document.getElementById("report-text");
 
 const assignedTab = document.getElementById("assigned-tab");
 
-// App state
+// ===============================
+// STATE
+// ===============================
 let currentUser = null;
 let currentRole = null;
-let currentTab = "daily"; // daily | my | assigned
+let currentTab = "daily";
 let currentRecipes = [];
 let currentRecipe = null;
 let selectedStars = 0;
 
-// Auth state listener
+// ===============================
+// HELPERS
+// ===============================
+function showBlocked(message) {
+  blockedMessageEl.textContent = message;
+  blockedOverlay.classList.remove("hidden");
+}
+
+// ===============================
+// AUTH LISTENER
+// ===============================
 auth.onAuthStateChanged(async (user) => {
   if (!user) {
     console.log("DEBUG: No user logged in");
@@ -49,114 +63,100 @@ auth.onAuthStateChanged(async (user) => {
   }
 
   console.log("DEBUG: User logged in:", user.uid);
-
-  try {
-    // 1) cookbook_users doc
-    const cookbookPath = `cookbook_users/${user.uid}`;
-    console.log("DEBUG: Attempting read:", cookbookPath);
-    const cbSnap = await db.doc(cookbookPath).get();
-    console.log("DEBUG: Read result:", cookbookPath, "exists=", cbSnap.exists);
-
-    // 2) settings/global
-    const settingsPath = `settings/global`;
-    console.log("DEBUG: Attempting read:", settingsPath);
-    const settingsSnap = await db.doc(settingsPath).get();
-    console.log("DEBUG: Read result:", settingsPath, "exists=", settingsSnap.exists);
-
-    // 3) recipes query (daily)
-    console.log("DEBUG: Attempting query: recipes where type==daily");
-    const qSnap = await db.collection("recipes").where("type", "==", "daily").limit(1).get();
-    console.log("DEBUG: Query result size:", qSnap.size);
-
-    // If we reach here, initialization reads succeeded
-    console.log("DEBUG: All initial reads succeeded. Proceeding with app init.");
-    // Continue your normal initialization (loadRecipesForTab etc.)
-    await loadRecipesForTab("daily");
-
-  } catch (err) {
-    console.error("DEBUG: Firestore read failed at step above. Error:", err);
-    // Show a helpful message in UI but keep the debug console output
-    showBlocked("Error initializing cookbook: check console for DEBUG output.");
-    cookbookMain.style.display = "none";
-  }
-});
-
   currentUser = user;
   userInfoEl.textContent = user.email || user.displayName || "User";
 
   try {
-    const userDoc = await db.collection("users").doc(user.uid).get();
-    const userData = userDoc.exists ? userDoc.data() : {};
-    currentRole = userData.role || "student";
+    // ------------------------------------------------------------
+    // 1) Ensure cookbook_users/{uid} exists
+    // ------------------------------------------------------------
+    const cbPath = `cookbook_users/${user.uid}`;
+    console.log("DEBUG: Reading:", cbPath);
+    const cbRef = db.doc(cbPath);
+    const cbSnap = await cbRef.get();
 
-    // Check banned
-    if (userData.banned) {
-      const expires = userData.banExpiresAt?.toDate?.() || null;
-      let message = "Your account is banned from using the Cookbook.";
-      if (expires) {
-        message += ` Ban expires on ${expires.toLocaleString()}.`;
-      }
-      showBlocked(message);
+    if (!cbSnap.exists) {
+      console.log("DEBUG: Creating missing cookbook_users doc");
+      await cbRef.set({
+        role: "student",
+        banned: false,
+        banExpiresAt: null
+      });
+    }
+
+    const cbData = (await cbRef.get()).data();
+    currentRole = cbData.role || "student";
+    console.log("DEBUG: Cookbook role:", currentRole);
+
+    if (cbData.banned) {
+      showBlocked("Your account is banned from using the Cookbook.");
       cookbookMain.style.display = "none";
       return;
     }
 
-    // Check global Cookbook block
-    const settingsDoc = await db.collection("settings").doc("global").get();
-    const settings = settingsDoc.exists ? settingsDoc.data() : {};
-    if (settings.cookbookBlocked && currentRole !== "admin" && currentRole !== "teacher") {
-      showBlocked("The Cookbook is currently unavailable. Please check back later.");
+    // ------------------------------------------------------------
+    // 2) Read settings/global
+    // ------------------------------------------------------------
+    const settingsPath = "settings/global";
+    console.log("DEBUG: Reading:", settingsPath);
+    const settingsSnap = await db.doc(settingsPath).get();
+
+    if (!settingsSnap.exists) {
+      console.warn("DEBUG: settings/global does NOT exist. Creating default.");
+      await db.doc(settingsPath).set({ cookbookBlocked: false });
+    }
+
+    const settings = (await db.doc(settingsPath).get()).data();
+    console.log("DEBUG: settings/global:", settings);
+
+    if (settings.cookbookBlocked && currentRole === "student") {
+      showBlocked("The Cookbook is currently unavailable.");
       cookbookMain.style.display = "none";
       return;
     }
 
-    // Show main UI
+    // ------------------------------------------------------------
+    // 3) Load recipes
+    // ------------------------------------------------------------
+    console.log("DEBUG: Loading recipes for tab:", currentTab);
+    await loadRecipesForTab(currentTab);
+
     cookbookMain.style.display = "block";
     blockedOverlay.classList.add("hidden");
 
-    // Hide Assigned tab for non-students/teachers if desired
-    if (currentRole !== "student" && currentRole !== "teacher") {
-      assignedTab.style.display = "none";
-    }
-
-    await loadRecipesForTab("daily");
   } catch (err) {
-    console.error("Error initializing cookbook:", err);
-    showBlocked("An error occurred while loading the Cookbook.");
+    console.error("DEBUG: Initialization failed:", err);
+    showBlocked("Error initializing cookbook. Check console for details.");
     cookbookMain.style.display = "none";
   }
 });
 
-// Logout
-logoutBtn.addEventListener("click", () => {
-  auth.signOut();
-});
-
-// Show blocked overlay
-function showBlocked(message) {
-  blockedMessageEl.textContent = message;
-  blockedOverlay.classList.remove("hidden");
-}
-
-// Tab switching
+// ===============================
+// TAB SWITCHING
+// ===============================
 tabs.forEach((tab) => {
   tab.addEventListener("click", async () => {
     const tabName = tab.dataset.tab;
     if (tabName === currentTab) return;
-    currentTab = tabName;
 
+    currentTab = tabName;
     tabs.forEach((t) => t.classList.remove("active"));
     tab.classList.add("active");
 
-    if (tabName === "daily") listTitleEl.textContent = "Daily Recipes";
-    if (tabName === "my") listTitleEl.textContent = "My Recipes";
-    if (tabName === "assigned") listTitleEl.textContent = "Assigned Recipes";
+    listTitleEl.textContent =
+      tabName === "daily"
+        ? "Daily Recipes"
+        : tabName === "my"
+        ? "My Recipes"
+        : "Assigned Recipes";
 
     await loadRecipesForTab(tabName);
   });
 });
 
-// Load recipes for current tab
+// ===============================
+// LOAD RECIPES
+// ===============================
 async function loadRecipesForTab(tabName) {
   recipeListEl.innerHTML = "";
   currentRecipes = [];
@@ -170,7 +170,12 @@ async function loadRecipesForTab(tabName) {
   if (tabName === "daily") {
     query = query.where("type", "==", "daily").orderBy("createdAt", "desc").limit(30);
   } else if (tabName === "my") {
-    const favSnap = await db.collection("favorites").doc(currentUser.uid).collection("recipes").get();
+    const favSnap = await db
+      .collection("favorites")
+      .doc(currentUser.uid)
+      .collection("recipes")
+      .get();
+
     const favIds = favSnap.docs.map((d) => d.id);
     if (favIds.length === 0) {
       recipeListEl.innerHTML = "<li>No favorites yet.</li>";
@@ -182,13 +187,13 @@ async function loadRecipesForTab(tabName) {
       recipeListEl.innerHTML = "<li>Assigned recipes are only for students and teachers.</li>";
       return;
     }
-    query = query
-      .where("type", "==", "assigned")
-      .orderBy("createdAt", "desc")
-      .limit(50);
+    query = query.where("type", "==", "assigned").orderBy("createdAt", "desc").limit(50);
   }
 
+  console.log("DEBUG: Querying recipes for tab:", tabName);
   const snap = await query.get();
+  console.log("DEBUG: Recipes found:", snap.size);
+
   if (snap.empty) {
     recipeListEl.innerHTML = "<li>No recipes found.</li>";
     return;
@@ -198,7 +203,9 @@ async function loadRecipesForTab(tabName) {
   renderRecipeList();
 }
 
-// Render left recipe list
+// ===============================
+// RENDER LIST
+// ===============================
 function renderRecipeList() {
   recipeListEl.innerHTML = "";
   currentRecipes.forEach((recipe) => {
@@ -213,21 +220,23 @@ function renderRecipeList() {
     const metaEl = document.createElement("div");
     metaEl.className = "recipe-list-item-meta";
     const dateStr = recipe.createdAt?.toDate?.().toLocaleDateString() || "";
-    metaEl.textContent = `${recipe.type === "daily" ? "Daily" : "Assigned"} • ${dateStr}`;
+    metaEl.textContent = `${recipe.type} • ${dateStr}`;
 
     li.appendChild(titleEl);
     li.appendChild(metaEl);
 
     li.addEventListener("click", () => selectRecipe(recipe.id));
-
     recipeListEl.appendChild(li);
   });
 }
 
-// Select a recipe
+// ===============================
+// SELECT RECIPE
+// ===============================
 function selectRecipe(recipeId) {
   const recipe = currentRecipes.find((r) => r.id === recipeId);
   if (!recipe) return;
+
   currentRecipe = recipe;
 
   document.querySelectorAll(".recipe-list-item").forEach((li) => {
@@ -237,14 +246,22 @@ function selectRecipe(recipeId) {
   recipeTitleEl.textContent = recipe.title;
   const createdAtStr = recipe.createdAt?.toDate?.().toLocaleString() || "";
   recipeInfoEl.textContent = `AI generated • ${createdAtStr}`;
-
   recipeContentEl.innerHTML = recipe.html || "<p>No content.</p>";
 }
 
-/* ------------ Interactions ------------ */
+// ===============================
+// PRINT / LIKE / FAVORITE / RATE / REPORT
+// (unchanged from your original)
+// ===============================
 
+/* ------------ Interactions ------------ */
+// ===============================
+
+// PRINT / LIKE / FAVORITE / RATE / REPORT
 // Print to PDF with watermark
+// (unchanged from your original)
 printBtn.addEventListener("click", () => {
+// ===============================
   if (!currentRecipe) return;
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF("p", "pt", "a4");
@@ -365,9 +382,12 @@ ratingSubmit.addEventListener("click", async () => {
     alert("Failed to submit rating.");
   }
 });
-
+ 
+ 
 /* Report modal logic */
-
+// ... keep your existing interaction handlers here ...
+ 
+ 
 reportBtn.addEventListener("click", () => {
   if (!currentRecipe) return;
   reportText.value = "";
