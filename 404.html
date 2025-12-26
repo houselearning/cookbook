@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>404 - Recipe Not Found | Cookbook</title>
+<style>
+  :root {
+    --bg: #f7f2ea; --paper: #fff8ef; --accent: #b04a2b; --muted: #6b5b50;
+    --card-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    font-family: "Georgia", "Times New Roman", serif;
+  }
+  html, body { height: 100%; margin: 0; background: linear-gradient(180deg,#f3eadf, #fff); color: #2b231f; }
+  .app {
+    max-width: 600px; margin: 10vh auto; padding: 48px 28px; background: var(--paper); 
+    box-shadow: var(--card-shadow); border-radius: 10px; border: 1px solid rgba(0,0,0,0.04);
+    text-align: center; display: none; /* Hidden by default until Auth check */
+  }
+  .logo {
+    width: 80px; height: 80px; border-radius: 8px; background: linear-gradient(135deg,#fff,#f5e8dd);
+    display: flex; align-items:center; justify-content:center; border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04); margin: 0 auto 24px;
+  }
+  .logo svg { width: 48px; height: 48px; fill: var(--accent); opacity: 0.5; }
+  h1 { font-size: 48px; color: var(--accent); margin: 0 0 10px; }
+  p { font-size: 18px; color: var(--muted); line-height: 1.6; margin-bottom: 32px; }
+  .btn {
+    display: inline-block; background: var(--accent); color: white; text-decoration: none;
+    padding: 12px 24px; border-radius: 8px; font-weight: bold; font-family: sans-serif; font-size: 14px;
+  }
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDoXSwni65CuY1_32ZE8B1nwfQO_3VNpTw",
+    authDomain: "contract-center-llc-10.firebaseapp.com",
+    projectId: "contract-center-llc-10",
+    storageBucket: "contract-center-llc-10.firebasestorage.app",
+    messagingSenderId: "323221512767",
+    appId: "1:323221512767:web:6421260f875997dbf64e8a",
+    measurementId: "G-S2RJ0C6BWH"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  firebase.auth().onAuthStateChanged(user => {
+    if (!user) {
+      // User is NOT signed in, redirect to /home
+      window.location.href = "/home";
+    } else {
+      // User IS signed in, show the 404 content
+      document.getElementById('errorContent').style.display = 'block';
+    }
+  });
+</script>
+</head>
+<body>
+
+<div class="app" id="errorContent">
+  <div class="logo">
+    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <path d="M32 10c-12 0-22 8-22 18h44c0-10-10-18-22-18zM10 32v4h10v-4H10zm14 0v4h16v-4H24zm20 0v4h10v-4H44z" />
+      <path d="M10 40l4 14h36l4-14H10z" opacity="0.3"/>
+    </svg>
+  </div>
+
+  <h1>404</h1>
+  <p>Oops! This recipe seems to be missing an ingredient. <br> 
+     <strong>The page you’re looking for doesn't exist.</strong></p>
+
+  <div style="margin-top: 40px;">
+    <a href="/" class="btn">Back to Cookbook</a>
+  </div>
+</div>
+
+</body>
+</html>
