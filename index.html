@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cookbook</title>
+<style>
+:root{
+  --bg:#f7f2ea; --paper:#fff8ef; --accent:#b04a2b; --muted:#6b5b50;
+  --card-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  font-family: "Georgia", "Times New Roman", serif;
+}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,#f3eadf, #fff);color:#2b231f;}
+.app{
+  max-width:1100px;margin:28px auto;padding:28px;background:var(--paper);box-shadow:var(--card-shadow);
+  border-radius:10px;border:1px solid rgba(0,0,0,0.04);
+}
+.header{display:flex;align-items:center;gap:18px;margin-bottom:18px;}
+.brand{display:flex;align-items:center;gap:12px;}
+.logo{
+  width:72px;height:72px;border-radius:8px;background:linear-gradient(135deg,#fff,#f5e8dd);
+  display:flex;align-items:center;justify-content:center;border:1px solid rgba(0,0,0,0.06);
+  box-shadow:0 4px 10px rgba(0,0,0,0.04);
+}
+.logo svg{width:44px;height:44px;fill:var(--accent);}
+.title{font-size:28px;font-weight:700;color:var(--accent);letter-spacing:0.6px;}
+.controls{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.profile {
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.avatar-btn{
+  width:40px;height:40px;border-radius:50%;overflow:hidden;border:2px solid rgba(0,0,0,0.06);background:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.avatar-btn img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar-fallback{font-family:inherit;color:var(--accent);font-weight:700}
+.profile-dropdown{
+  position:absolute;right:0;top:calc(100% + 8px);background:#fff;border-radius:8px;padding:6px;border:1px solid rgba(0,0,0,0.06);box-shadow:0 8px 18px rgba(0,0,0,0.08);min-width:180px;display:none;z-index:60;
+}
+.profile-dropdown.show{display:block}
+.dropdown-item{padding:8px 10px;border-radius:6px;color:#333;text-decoration:none;display:block;font-size:14px;cursor:pointer}
+.dropdown-item:hover{background:#f7f2ea}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filter-chip{padding:6px 10px;border-radius:999px;border:1px solid rgba(0,0,0,0.06);background:#fff;font-size:13px;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-top:14px;}
+.card{background:#fff;border-radius:12px;padding:14px;border:1px solid rgba(0,0,0,0.04);box-shadow:var(--card-shadow);cursor:pointer;display:flex;flex-direction:column;gap:10px;min-height:160px}
+.card .meta{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted)}
+.card h3{margin:0;font-size:18px;color:#3d2c26}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:12px;padding:4px 8px;border-radius:999px;background:#fff7f5;border:1px solid rgba(176,74,43,0.12);color:var(--accent)}
+.preview-ingredients{font-size:13px;color:var(--muted);margin-top:auto}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.35);display:none;align-items:center;justify-content:center;padding:20px}
+.modal{background:#fff;width:min(900px,98%);max-height:90vh;overflow:auto;border-radius:10px;padding:20px;border:1px solid rgba(0,0,0,0.06)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.modal h2{margin:0}
+.modal .meta-row{color:var(--muted);font-size:14px;margin-top:4px}
+.ingredients, .steps{margin-top:12px}
+.ingredients ul{margin:6px 0 0 18px}
+.steps ol{margin:6px 0 0 18px}
+.small{font-size:13px;color:var(--muted)}
+.footer{margin-top:18px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px}
+.file-input{display:none}
+.row{display:flex;gap:8px;align-items:center}
+.print-btn{background:#fff;border:1px solid rgba(0,0,0,0.06);padding:8px 10px;border-radius:8px;cursor:pointer}
+.empty{padding:40px;text-align:center;color:var(--muted);border:2px dashed rgba(0,0,0,0.04);border-radius:12px}
+@media print{
+  body,html{background:#fff}
+  .app{box-shadow:none;border:none}
+  .modal{position:static;max-height:none}
+  .modal-backdrop{display:flex !important}
+}
+</style>
+
+<!-- add Firebase (compat) SDK and initialization -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script>
+  // Firebase config + init
+  const firebaseConfig = {
+    apiKey: "AIzaSyDoXSwni65CuY1_32ZE8B1nwfQO_3VNpTw",
+    authDomain: "contract-center-llc-10.firebaseapp.com",
+    projectId: "contract-center-llc-10",
+    storageBucket: "contract-center-llc-10.firebasestorage.app",
+    messagingSenderId: "323221512767",
+    appId: "1:323221512767:web:6421260f875997dbf64e8a",
+    measurementId: "G-S2RJ0C6BWH"
+  };
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+</head>
+<body>
+<div class="app" id="app">
+  <div class="header">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 8h24v6H20zM18 20h28v32H18z" />
+        </svg>
+      </div>
+      <div>
+        <div class="title">Cookbook</div>
+        <div class="small">Your recipes — ready to cook</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <input id="search" class="search" placeholder="Search recipes, ingredients, tags..." />
+      <div class="profile" id="profileWrap" aria-hidden="true" style="display:none">
+        <button id="profileBtn" class="avatar-btn" title="Account">
+          <img id="profileImg" src="" alt="Profile" style="display:none" />
+          <div id="profileFallback" class="avatar-fallback" style="display:none"></div>
+        </button>
+        <div id="profileDropdown" class="profile-dropdown" role="menu" aria-hidden="true">
+          <a id="homeLink" class="dropdown-item" href="/home">Home</a>
+          <a id="settingsLink" class="dropdown-item" href="/auth/dashboard/settings">Account Settings</a>
+          <div class="small-muted"> </div>
+          <div id="signOutBtn" class="dropdown-item" role="button">Sign Out</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="filters" id="filters"></div>
+    <div style="margin-left:auto" class="small" id="count">0 recipes</div>
+  </div>
+
+  <div id="gridWrap">
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div id="empty" class="empty" style="display:none">
+    No recipes found. Import a recipes.json or click Export to seed one.
+  </div>
+
+  <div class="footer">
+    <div>Tip: click a recipe to view details. Print from the modal.</div>
+    <div>v1 • local-only</div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
+  <div class="modal" role="document" aria-modal="true">
+    <div class="modal-header">
+      <div>
+        <h2 id="modalTitle"></h2>
+        <div class="meta-row" id="modalMeta"></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="printBtn" class="print-btn">Print</button>
+        <button id="closeModal" class="action-btn">Close</button>
+      </div>
+    </div>
+    <div id="modalBody">
+      <div class="ingredients">
+        <strong>Ingredients</strong>
+        <ul id="modalIngredients"></ul>
+      </div>
+      <div class="steps">
+        <strong>Directions</strong>
+        <ol id="modalSteps"></ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Utility
+  const $ = sel => document.querySelector(sel);
+  const grid = $('#grid');
+  const filtersEl = $('#filters');
+  const searchEl = $('#search');
+  const countEl = $('#count');
+  const emptyEl = $('#empty');
+  const modalBackdrop = $('#modalBackdrop');
+  const modalTitle = $('#modalTitle');
+  const modalMeta = $('#modalMeta');
+  const modalIngredients = $('#modalIngredients');
+  const modalSteps = $('#modalSteps');
+  const printBtn = $('#printBtn');
+  const closeModal = $('#closeModal');
+  const profileWrap = document.getElementById('profileWrap');
+  const profileBtn = document.getElementById('profileBtn');
+  const profileImg = document.getElementById('profileImg');
+  const profileFallback = document.getElementById('profileFallback');
+  const profileDropdown = document.getElementById('profileDropdown');
+  const signOutBtn = document.getElementById('signOutBtn');
+  const homeLink = document.getElementById('homeLink');
+  const settingsLink = document.getElementById('settingsLink');
+
+  let recipes = [];
+
+  function cryptoRandomId(){ return 'id_'+Math.random().toString(36).slice(2,9); }
+
+  // Build set of tags
+  function uniqueTags(list){
+    const s = new Set();
+    list.forEach(r => (r.tags||[]).forEach(t => s.add(t)));
+    return Array.from(s).sort();
+  }
+
+  // Render functions
+  function renderGrid(list){
+    grid.innerHTML = '';
+    if(!list.length){ $('#gridWrap').style.display='none'; emptyEl.style.display='block'; countEl.textContent='0 recipes'; return; }
+    $('#gridWrap').style.display='block'; emptyEl.style.display='none';
+    countEl.textContent = list.length + (list.length === 1 ? ' recipe' : ' recipes');
+    list.forEach(r => {
+      const card = document.createElement('div'); card.className='card';
+      card.innerHTML = `
+        <div class="meta">
+          <div class="small">${r.time || ''}</div>
+          <div class="small">${r.servings ? r.servings + ' servings' : ''}</div>
+        </div>
+        <h3>${escapeHtml(r.title)}</h3>
+        <div class="tags">${(r.tags||[]).slice(0,3).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
+        <div class="preview-ingredients small">${(r.ingredients||[]).slice(0,3).map(i => i.whole || (i.qty+' '+(i.unit||'')+' '+(i.item||''))).join(' • ')}</div>
+      `;
+      card.addEventListener('click', ()=>openModal(r));
+      grid.appendChild(card);
+    });
+  }
+
+  function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function renderFilters(){
+    filtersEl.innerHTML = '';
+    const tags = uniqueTags(recipes);
+    if(!tags.length){ filtersEl.innerHTML = '<div class="small">No tags</div>'; return; }
+    tags.forEach(t=>{
+      const b = document.createElement('button');
+      b.className='filter-chip';
+      b.textContent = t;
+      b.dataset.tag = t;
+      b.addEventListener('click', ()=> {
+        b.classList.toggle('active');
+        applyFilters();
+      });
+      filtersEl.appendChild(b);
+    });
+  }
+
+  function getActiveTags(){
+    return Array.from(filtersEl.querySelectorAll('.filter-chip.active')).map(n=>n.dataset.tag);
+  }
+
+  function applyFilters(){
+    const q = (searchEl.value || '').trim().toLowerCase();
+    const tags = getActiveTags();
+    const filtered = recipes.filter(r=>{
+      if(tags.length && !(r.tags||[]).some(t=>tags.includes(t))) return false;
+      if(!q) return true;
+      const inTitle = (r.title||'').toLowerCase().includes(q);
+      const inTags = (r.tags||[]).some(t=>t.toLowerCase().includes(q));
+      const inIngredients = (r.ingredients||[]).some(i => (i.whole||'').toLowerCase().includes(q) || ((i.item||'') + ' ' + (i.unit||'')).toLowerCase().includes(q));
+      const inSteps = (r.steps||[]).some(s=>s.toLowerCase().includes(q));
+      return inTitle || inTags || inIngredients || inSteps;
+    });
+    renderGrid(filtered);
+  }
+
+  // Modal
+  function openModal(r){
+    modalTitle.textContent = r.title;
+    modalMeta.textContent = `${r.time || ''} • ${r.servings ? r.servings+' servings' : ''} • ${ (r.tags||[]).join(', ')}`;
+    modalIngredients.innerHTML = (r.ingredients||[]).map(i => `<li>${escapeHtml(i.whole || ( (i.qty||'') + ' ' + (i.unit||'') + ' ' + (i.item||'') ))}</li>`).join('');
+    modalSteps.innerHTML = (r.steps||[]).map(s => `<li>${escapeHtml(s)}</li>`).join('');
+    modalBackdrop.style.display='flex';
+    modalBackdrop.setAttribute('aria-hidden','false');
+    setTimeout(()=>printBtn.onclick = ()=>{ window.print(); }, 0);
+  }
+  closeModal.addEventListener('click', ()=> {
+    modalBackdrop.style.display='none';
+    modalBackdrop.setAttribute('aria-hidden','true');
+  });
+  modalBackdrop.addEventListener('click', (e)=> { if(e.target === modalBackdrop) closeModal.click(); });
+
+  // Load from recipies.json (file must be served alongside this HTML)
+  function loadRecipes(){
+    fetch('recipies.json')
+      .then(resp => {
+        if(!resp.ok) throw new Error('Failed to load recipies.json: ' + resp.status);
+        return resp.json();
+      })
+      .then(data => {
+        if(!Array.isArray(data)) throw new Error('recipies.json must contain an array of recipes');
+        recipes = data.map(r => ({...r, tags: r.tags || [], id: r.id || cryptoRandomId()}));
+        renderFilters();
+        applyFilters();
+      })
+      .catch(err => {
+        console.error(err);
+        recipes = [];
+        renderFilters();
+        applyFilters();
+        emptyEl.textContent = 'Could not load recipies.json. Ensure the file exists and is served correctly.';
+        emptyEl.style.display = 'block';
+        document.getElementById('gridWrap').style.display='none';
+      });
+  }
+
+  // Require authentication before loading recipes & populate avatar
+  firebase.auth().onAuthStateChanged(user => {
+    if(user){
+      // show avatar area
+      profileWrap.style.display = 'flex';
+      profileWrap.setAttribute('aria-hidden','false');
+      // populate photo or fallback (first letter of displayName / email)
+      const photo = user.photoURL || '';
+      if(photo){
+        profileImg.src = photo;
+        profileImg.style.display = '';
+        profileFallback.style.display = 'none';
+      } else {
+        profileImg.style.display = 'none';
+        const name = (user.displayName || user.email || '').trim();
+        profileFallback.textContent = name ? name.charAt(0).toUpperCase() : 'U';
+        profileFallback.style.display = '';
+      }
+      // load recipes after preparing UI
+      loadRecipes();
+    } else {
+      // not signed in — redirect to auth
+      window.location.href = '/auth/';
+    }
+  });
+
+  // Toggle dropdown
+  profileBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const open = profileDropdown.classList.toggle('show');
+    profileDropdown.setAttribute('aria-hidden', !open);
+  });
+
+  // Close dropdown clicking outside
+  document.addEventListener('click', (e) => {
+    if(profileDropdown.classList.contains('show') && !profileWrap.contains(e.target)){
+      profileDropdown.classList.remove('show');
+      profileDropdown.setAttribute('aria-hidden', 'true');
+    }
+  });
+
+  // Sign out behavior
+  signOutBtn.addEventListener('click', async () => {
+    try{
+      await firebase.auth().signOut();
+    }catch(e){
+      console.error('Sign out failed', e);
+    }
+    window.location.href = '/auth/';
+  });
+
+  // Optional: close dropdown on navigation clicks (home/settings)
+  homeLink.addEventListener('click', ()=> profileDropdown.classList.remove('show'));
+  settingsLink.addEventListener('click', ()=> profileDropdown.classList.remove('show'));
+
+  // Search debounce
+  let debounce;
+  searchEl.addEventListener('input', ()=>{ clearTimeout(debounce); debounce = setTimeout(applyFilters, 220); });
+
+})();
+</script>
+</body>
+</html>
