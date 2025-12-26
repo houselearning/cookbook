@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Cookbook</title>
+<title>HouseLearning Cookbook</title>
 <style>
 :root{
   --bg:#f7f2ea; --paper:#fff8ef; --accent:#b04a2b; --muted:#6b5b50;
@@ -73,6 +73,9 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,#f3eadf, #fff);
 }
 </style>
 
+<!-- add html2pdf bundle (used to render HTML -> PDF blob) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
 <!-- add Firebase (compat) SDK and initialization -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
@@ -101,7 +104,7 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,#f3eadf, #fff);
         </svg>
       </div>
       <div>
-        <div class="title">Cookbook</div>
+        <div class="title">HouseLearning Cookbook</div>
         <div class="small">Your recipes — ready to cook</div>
       </div>
     </div>
@@ -272,7 +275,8 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,#f3eadf, #fff);
     modalSteps.innerHTML = (r.steps||[]).map(s => `<li>${escapeHtml(s)}</li>`).join('');
     modalBackdrop.style.display='flex';
     modalBackdrop.setAttribute('aria-hidden','false');
-    setTimeout(()=>printBtn.onclick = ()=>{ window.print(); }, 0);
+    // new: generate PDF blob and open in new tab
+    printBtn.onclick = ()=> generateRecipePdf(r);
   }
   closeModal.addEventListener('click', ()=> {
     modalBackdrop.style.display='none';
@@ -362,6 +366,100 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,#f3eadf, #fff);
   // Search debounce
   let debounce;
   searchEl.addEventListener('input', ()=>{ clearTimeout(debounce); debounce = setTimeout(applyFilters, 220); });
+
+  // new: generate PDF blob of a recipe and open in new tab
+  function safeFilename(s){ return (s||'recipe').replace(/[^\w\-\. ]+/g,'').slice(0,120) }
+  async function generateRecipePdf(r){
+    // build offscreen container with styles and watermark
+    const container = document.createElement('div');
+    container.style.position = 'fixed';
+    container.style.left = '-9999px';
+    container.style.top = '0';
+    container.style.width = '800px'; // consistent rendering width
+    container.innerHTML = `
+      <style>
+        body{font-family: Georgia, 'Times New Roman', serif;color:#2b231f;}
+        .page{padding:28px;background:#fff;min-height:1120px;position:relative;box-sizing:border-box}
+        .hdr{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+        .logoBox{width:72px;height:72px;border-radius:8px;background:linear-gradient(135deg,#fff,#f5e8dd);display:flex;align-items:center;justify-content:center;border:1px solid rgba(0,0,0,0.06)}
+        .title{font-size:28px;color:#b04a2b;font-weight:700}
+        .meta{color:#6b5b50;margin-top:6px}
+        .cols{display:flex;gap:28px;margin-top:14px}
+        .left{width:40%}
+        .right{flex:1}
+        .section h3{margin:0 0 8px 0;font-size:18px;color:#3d2c26}
+        ul.ingredients{margin:0;padding-left:18px}
+        ol.steps{margin:0;padding-left:18px}
+        .tag{display:inline-block;background:#fff7f5;color:#b04a2b;padding:4px 8px;border-radius:999px;border:1px solid rgba(176,74,43,0.12);margin-right:6px;font-size:12px}
+        /* watermark center */
+        .watermark{
+          position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;pointer-events:none;
+          opacity:0.06;font-size:48px;color:#000;flex-direction:row;gap:12px;z-index:10;
+        }
+        .watermark img{width:48px;height:48px;vertical-align:middle}
+        /* page border for a fancy look */
+        .page{border:1px solid rgba(0,0,0,0.04);box-shadow:0 8px 30px rgba(0,0,0,0.06)}
+        @media print{ .watermark{opacity:0.08} }
+      </style>
+
+      <div class="page">
+        <div class="watermark"><img src="/favicon.svg" alt="HL"> <div>HouseLearning</div></div>
+
+        <div class="hdr">
+          <div class="logoBox"><img src="/favicon.svg" alt="" style="width:44px;height:44px"/></div>
+          <div>
+            <div class="title">${escapeHtml(r.title)}</div>
+            <div class="meta">${escapeHtml(r.time || '')} • ${r.servings ? r.servings+' servings' : ''}</div>
+            <div style="margin-top:8px">${(r.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
+          </div>
+        </div>
+
+        <div class="cols">
+          <div class="left">
+            <div class="section">
+              <h3>Ingredients</h3>
+              <ul class="ingredients">
+                ${(r.ingredients||[]).map(i=>`<li>${escapeHtml(i.whole || ((i.qty||'') + ' ' + (i.unit||'') + ' ' + (i.item||'')))}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+          <div class="right">
+            <div class="section">
+              <h3>Directions</h3>
+              <ol class="steps">
+                ${(r.steps||[]).map(s=>`<li>${escapeHtml(s)}</li>`).join('')}
+              </ol>
+            </div>
+            <!-- optional footer -->
+            <div style="margin-top:24px;color:#6b5b50;font-size:13px">Generated by HouseLearning</div>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(container);
+
+    try{
+      const opt = {
+        margin: [10,10,10,10],
+        filename: safeFilename(r.title) + '.pdf',
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      // generate blob and open in new tab
+      const worker = html2pdf().from(container).set(opt);
+      const blob = await worker.outputPdf('blob');
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    }catch(err){
+      console.error('PDF generation failed', err);
+      alert('Failed to generate PDF. You can still use Print.');
+    }finally{
+      container.remove();
+    }
+  }
+
+  // ...existing code (auth handling, dropdowns, fetch, search debounce) ...
 
 })();
 </script>
