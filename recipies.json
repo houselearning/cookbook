@@ -1,0 +1,448 @@
+[
+  {
+    "id": "r1",
+    "title": "Lemon Herb Roasted Chicken",
+    "servings": 4,
+    "time": "1h 20m",
+    "tags": ["dinner", "poultry", "roast"],
+    "ingredients": [
+      { "whole": "1 whole chicken (3-4 lb)" },
+      { "qty": "2", "unit": "tbsp", "item": "olive oil" },
+      { "qty": "3", "unit": "cloves", "item": "garlic, minced" },
+      { "qty": "1", "unit": "tsp", "item": "dried rosemary" }
+    ],
+    "steps": [
+      "Preheat oven to 425°F (220°C).",
+      "Rub chicken with olive oil, garlic and seasonings.",
+      "Roast 60–75 minutes until internal temperature reaches 165°F."
+    ]
+  },
+  {
+    "id": "r2",
+    "title": "Classic Tomato Basil Pasta",
+    "servings": 2,
+    "time": "25m",
+    "tags": ["vegetarian", "pasta", "quick"],
+    "ingredients": [
+      { "qty": "200", "unit": "g", "item": "spaghetti" },
+      { "qty": "400", "unit": "g", "item": "canned crushed tomatoes" },
+      { "whole": "Handful fresh basil leaves" },
+      { "qty": "1", "unit": "tbsp", "item": "olive oil" }
+    ],
+    "steps": [
+      "Cook pasta in salted water until al dente.",
+      "Simmer tomatoes with garlic and oil for 15 minutes.",
+      "Toss pasta with sauce and fresh basil."
+    ]
+  },
+  {
+    "id": "r3",
+    "title": "Avocado Toast with Poached Egg",
+    "servings": 1,
+    "time": "10m",
+    "tags": ["breakfast", "quick", "healthy"],
+    "ingredients": [
+      { "qty": "1", "unit": "slice", "item": "sourdough bread" },
+      { "qty": "0.5", "unit": "", "item": "ripe avocado" },
+      { "qty": "1", "unit": "", "item": "large egg" },
+      { "whole": "Pinch of red pepper flakes" }
+    ],
+    "steps": [
+      "Toast the bread until golden brown.",
+      "Mash avocado with salt and pepper; spread on toast.",
+      "Poach the egg for 3 minutes and place on top."
+    ]
+  },
+  {
+    "id": "r4",
+    "title": "Stir-Fry Ginger Beef",
+    "servings": 3,
+    "time": "20m",
+    "tags": ["dinner", "beef", "asian"],
+    "ingredients": [
+      { "qty": "500", "unit": "g", "item": "flank steak, sliced" },
+      { "qty": "2", "unit": "tbsp", "item": "soy sauce" },
+      { "qty": "1", "unit": "tbsp", "item": "fresh ginger, minced" },
+      { "qty": "2", "unit": "cups", "item": "broccoli florets" }
+    ],
+    "steps": [
+      "Sear beef in a hot wok until browned.",
+      "Add broccoli, ginger, and soy sauce.",
+      "Stir-fry for 3-5 minutes until broccoli is tender-crisp."
+    ]
+  },
+  {
+    "id": "r5",
+    "title": "Creamy Garlic Mushrooms",
+    "servings": 2,
+    "time": "15m",
+    "tags": ["side", "vegetarian", "keto"],
+    "ingredients": [
+      { "qty": "250", "unit": "g", "item": "button mushrooms" },
+      { "qty": "2", "unit": "cloves", "item": "garlic" },
+      { "qty": "100", "unit": "ml", "item": "heavy cream" },
+      { "qty": "1", "unit": "tbsp", "item": "butter" }
+    ],
+    "steps": [
+      "Sauté mushrooms in butter until golden.",
+      "Add minced garlic and cook for 1 minute.",
+      "Pour in cream and simmer until thickened."
+    ]
+  },
+  {
+    "id": "r6",
+    "title": "Simple French Toast",
+    "servings": 2,
+    "time": "15m",
+    "tags": ["breakfast", "sweet"],
+    "ingredients": [
+      { "qty": "4", "unit": "slices", "item": "brioche or white bread" },
+      { "qty": "2", "unit": "", "item": "eggs" },
+      { "qty": "0.25", "unit": "cup", "item": "milk" },
+      { "qty": "1", "unit": "tsp", "item": "cinnamon" }
+    ],
+    "steps": [
+      "Whisk eggs, milk, and cinnamon in a shallow bowl.",
+      "Dip bread slices into the mixture until soaked.",
+      "Fry in a buttered skillet until golden on both sides."
+    ]
+  },
+  {
+    "id": "r7",
+    "title": "Black Bean Tacos",
+    "servings": 4,
+    "time": "20m",
+    "tags": ["vegan", "dinner", "mexican"],
+    "ingredients": [
+      { "qty": "1", "unit": "can", "item": "black beans, drained" },
+      { "qty": "8", "unit": "small", "item": "corn tortillas" },
+      { "qty": "1", "unit": "tsp", "item": "cumin" },
+      { "whole": "Fresh cilantro and lime" }
+    ],
+    "steps": [
+      "Warm beans in a pan with cumin and a splash of water.",
+      "Char tortillas over an open flame or in a dry pan.",
+      "Assemble with beans, cilantro, and a squeeze of lime."
+    ]
+  },
+  {
+    "id": "r8",
+    "title": "Honey Glazed Salmon",
+    "servings": 2,
+    "time": "18m",
+    "tags": ["dinner", "seafood", "healthy"],
+    "ingredients": [
+      { "qty": "2", "unit": "fillets", "item": "salmon" },
+      { "qty": "2", "unit": "tbsp", "item": "honey" },
+      { "qty": "1", "unit": "tbsp", "item": "soy sauce" },
+      { "qty": "1", "unit": "tsp", "item": "lemon juice" }
+    ],
+    "steps": [
+      "Whisk honey, soy sauce, and lemon juice.",
+      "Sear salmon in a pan for 4 minutes on one side.",
+      "Flip, pour glaze over, and cook 3 more minutes."
+    ]
+  },
+  {
+    "id": "r9",
+    "title": "Caprese Salad",
+    "servings": 2,
+    "time": "5m",
+    "tags": ["salad", "vegetarian", "no-cook"],
+    "ingredients": [
+      { "qty": "2", "unit": "large", "item": "ripe tomatoes" },
+      { "qty": "1", "unit": "ball", "item": "fresh mozzarella" },
+      { "whole": "Fresh basil leaves" },
+      { "qty": "1", "unit": "tbsp", "item": "balsamic glaze" }
+    ],
+    "steps": [
+      "Slice tomatoes and mozzarella into rounds.",
+      "Layer them alternately with basil leaves.",
+      "Drizzle with olive oil and balsamic glaze."
+    ]
+  },
+  {
+    "id": "r10",
+    "title": "Greek Yogurt Parfait",
+    "servings": 1,
+    "time": "5m",
+    "tags": ["breakfast", "healthy"],
+    "ingredients": [
+      { "qty": "1", "unit": "cup", "item": "Greek yogurt" },
+      { "qty": "0.5", "unit": "cup", "item": "granola" },
+      { "qty": "0.5", "unit": "cup", "item": "mixed berries" },
+      { "qty": "1", "unit": "tsp", "item": "honey" }
+    ],
+    "steps": [
+      "Layer half the yogurt in a glass.",
+      "Add a layer of berries and granola.",
+      "Repeat and drizzle honey on top."
+    ]
+  },
+  {
+    "id": "r11",
+    "title": "Peanut Butter Banana Smoothie",
+    "servings": 1,
+    "time": "5m",
+    "tags": ["drink", "breakfast", "vegan"],
+    "ingredients": [
+      { "qty": "1", "unit": "", "item": "frozen banana" },
+      { "qty": "1", "unit": "tbsp", "item": "peanut butter" },
+      { "qty": "1", "unit": "cup", "item": "almond milk" },
+      { "qty": "1", "unit": "tsp", "item": "chia seeds" }
+    ],
+    "steps": [
+      "Place all ingredients into a blender.",
+      "Blend on high until smooth.",
+      "Pour into a glass and serve immediately."
+    ]
+  },
+  {
+    "id": "r12",
+    "title": "Crispy Roasted Potatoes",
+    "servings": 4,
+    "time": "45m",
+    "tags": ["side", "vegan", "roast"],
+    "ingredients": [
+      { "qty": "1", "unit": "kg", "item": "yukon gold potatoes" },
+      { "qty": "3", "unit": "tbsp", "item": "olive oil" },
+      { "qty": "1", "unit": "tsp", "item": "garlic powder" },
+      { "qty": "1", "unit": "tsp", "item": "dried thyme" }
+    ],
+    "steps": [
+      "Preheat oven to 400°F (200°C).",
+      "Cut potatoes into cubes and toss with oil and spices.",
+      "Roast for 35-40 minutes, tossing halfway through."
+    ]
+  },
+  {
+    "id": "r13",
+    "title": "Classic Caesar Salad",
+    "servings": 2,
+    "time": "15m",
+    "tags": ["salad", "lunch"],
+    "ingredients": [
+      { "qty": "1", "unit": "head", "item": "romaine lettuce" },
+      { "qty": "0.25", "unit": "cup", "item": "parmesan cheese" },
+      { "qty": "0.5", "unit": "cup", "item": "croutons" },
+      { "qty": "3", "unit": "tbsp", "item": "caesar dressing" }
+    ],
+    "steps": [
+      "Chop lettuce into bite-sized pieces.",
+      "Toss with dressing until well coated.",
+      "Top with croutons and shaved parmesan."
+    ]
+  },
+  {
+    "id": "r14",
+    "title": "Baked Ziti",
+    "servings": 6,
+    "time": "50m",
+    "tags": ["dinner", "pasta", "family"],
+    "ingredients": [
+      { "qty": "500", "unit": "g", "item": "ziti pasta" },
+      { "qty": "1", "unit": "jar", "item": "marinara sauce" },
+      { "qty": "2", "unit": "cups", "item": "mozzarella cheese" },
+      { "qty": "1", "unit": "cup", "item": "ricotta cheese" }
+    ],
+    "steps": [
+      "Boil ziti for 2 minutes less than the box instructions.",
+      "Mix pasta, sauce, and ricotta; top with mozzarella.",
+      "Bake at 375°F (190°C) for 20-25 minutes."
+    ]
+  },
+  {
+    "id": "r15",
+    "title": "Guacamole",
+    "servings": 4,
+    "time": "10m",
+    "tags": ["dip", "vegan", "mexican"],
+    "ingredients": [
+      { "qty": "3", "unit": "", "item": "ripe avocados" },
+      { "qty": "1", "unit": "small", "item": "onion, diced" },
+      { "qty": "1", "unit": "", "item": "lime, juiced" },
+      { "whole": "Fresh cilantro" }
+    ],
+    "steps": [
+      "Mash avocados in a bowl leaving some chunks.",
+      "Stir in onion, lime juice, and chopped cilantro.",
+      "Season with salt and serve with chips."
+    ]
+  },
+  {
+    "id": "r16",
+    "title": "One-Pan Lemon Asparagus",
+    "servings": 2,
+    "time": "12m",
+    "tags": ["side", "vegan", "quick"],
+    "ingredients": [
+      { "qty": "1", "unit": "bunch", "item": "thin asparagus" },
+      { "qty": "1", "unit": "tbsp", "item": "olive oil" },
+      { "qty": "1", "unit": "tsp", "item": "lemon zest" },
+      { "qty": "2", "unit": "cloves", "item": "garlic" }
+    ],
+    "steps": [
+      "Trim the woody ends off the asparagus.",
+      "Sauté in a pan with oil and garlic for 5-7 minutes.",
+      "Finish with lemon zest and sea salt."
+    ]
+  },
+  {
+    "id": "r17",
+    "title": "Shakshuka",
+    "servings": 3,
+    "time": "30m",
+    "tags": ["breakfast", "vegetarian", "brunch"],
+    "ingredients": [
+      { "qty": "1", "unit": "can", "item": "diced tomatoes" },
+      { "qty": "4", "unit": "large", "item": "eggs" },
+      { "qty": "1", "unit": "tsp", "item": "paprika" },
+      { "qty": "1", "unit": "", "item": "bell pepper, sliced" }
+    ],
+    "steps": [
+      "Sauté peppers and onions until soft.",
+      "Add tomatoes and spices; simmer for 10 minutes.",
+      "Crack eggs into the sauce and cover until set."
+    ]
+  },
+  {
+    "id": "r18",
+    "title": "Quinoa Salad",
+    "servings": 4,
+    "time": "20m",
+    "tags": ["salad", "vegan", "healthy"],
+    "ingredients": [
+      { "qty": "1", "unit": "cup", "item": "dry quinoa" },
+      { "qty": "1", "unit": "", "item": "cucumber, diced" },
+      { "qty": "0.25", "unit": "cup", "item": "lemon juice" },
+      { "whole": "Fresh parsley" }
+    ],
+    "steps": [
+      "Cook quinoa according to package instructions.",
+      "Let cool and toss with cucumber and parsley.",
+      "Whisk lemon juice and oil; pour over salad."
+    ]
+  },
+  {
+    "id": "r19",
+    "title": "Turkey Chili",
+    "servings": 5,
+    "time": "45m",
+    "tags": ["dinner", "stew", "poultry"],
+    "ingredients": [
+      { "qty": "500", "unit": "g", "item": "ground turkey" },
+      { "qty": "2", "unit": "cans", "item": "kidney beans" },
+      { "qty": "1", "unit": "tbsp", "item": "chili powder" },
+      { "qty": "1", "unit": "can", "item": "tomato sauce" }
+    ],
+    "steps": [
+      "Brown turkey in a large pot.",
+      "Add beans, sauce, and spices.",
+      "Simmer on low for 30 minutes to develop flavor."
+    ]
+  },
+  {
+    "id": "r20",
+    "title": "Simple Quesadilla",
+    "servings": 1,
+    "time": "10m",
+    "tags": ["snack", "vegetarian", "quick"],
+    "ingredients": [
+      { "qty": "1", "unit": "large", "item": "flour tortilla" },
+      { "qty": "0.5", "unit": "cup", "item": "shredded cheddar" },
+      { "qty": "1", "unit": "tsp", "item": "butter" }
+    ],
+    "steps": [
+      "Melt butter in a skillet.",
+      "Place tortilla in pan and cover half with cheese.",
+      "Fold over and cook until crispy and cheese melts."
+    ]
+  },
+  {
+    "id": "r21",
+    "title": "Balsamic Glazed Brussels Sprouts",
+    "servings": 3,
+    "time": "30m",
+    "tags": ["side", "vegan"],
+    "ingredients": [
+      { "qty": "500", "unit": "g", "item": "brussels sprouts" },
+      { "qty": "2", "unit": "tbsp", "item": "olive oil" },
+      { "qty": "2", "unit": "tbsp", "item": "balsamic vinegar" }
+    ],
+    "steps": [
+      "Halve sprouts and toss with oil and salt.",
+      "Roast at 400°F (200°C) for 20-25 minutes.",
+      "Toss with balsamic vinegar immediately after roasting."
+    ]
+  },
+  {
+    "id": "r22",
+    "title": "Mashed Sweet Potatoes",
+    "servings": 4,
+    "time": "25m",
+    "tags": ["side", "vegetarian"],
+    "ingredients": [
+      { "qty": "3", "unit": "large", "item": "sweet potatoes" },
+      { "qty": "2", "unit": "tbsp", "item": "butter" },
+      { "qty": "1", "unit": "tbsp", "item": "maple syrup" }
+    ],
+    "steps": [
+      "Peel and boil potatoes until tender.",
+      "Drain and mash with butter and syrup.",
+      "Serve warm with a pinch of cinnamon."
+    ]
+  },
+  {
+    "id": "r23",
+    "title": "Classic Beef Burgers",
+    "servings": 4,
+    "time": "20m",
+    "tags": ["dinner", "beef", "grill"],
+    "ingredients": [
+      { "qty": "600", "unit": "g", "item": "ground beef (80/20)" },
+      { "qty": "4", "unit": "", "item": "burger buns" },
+      { "whole": "Lettuce and tomato" }
+    ],
+    "steps": [
+      "Shape beef into 4 equal patties without overworking.",
+      "Grill or pan-sear for 4 minutes per side.",
+      "Toast buns and assemble with desired toppings."
+    ]
+  },
+  {
+    "id": "r24",
+    "title": "Lemon Garlic Shrimp",
+    "servings": 2,
+    "time": "12m",
+    "tags": ["dinner", "seafood", "quick"],
+    "ingredients": [
+      { "qty": "300", "unit": "g", "item": "large shrimp, peeled" },
+      { "qty": "3", "unit": "cloves", "item": "garlic, minced" },
+      { "qty": "1", "unit": "tbsp", "item": "lemon juice" },
+      { "qty": "1", "unit": "tbsp", "item": "butter" }
+    ],
+    "steps": [
+      "Sauté garlic in butter for 30 seconds.",
+      "Add shrimp and cook until pink (about 3 minutes).",
+      "Stir in lemon juice and parsley."
+    ]
+  },
+  {
+    "id": "r25",
+    "title": "Apple Cinnamon Oatmeal",
+    "servings": 1,
+    "time": "10m",
+    "tags": ["breakfast", "vegetarian", "healthy"],
+    "ingredients": [
+      { "qty": "0.5", "unit": "cup", "item": "rolled oats" },
+      { "qty": "1", "unit": "cup", "item": "water or milk" },
+      { "qty": "1", "unit": "small", "item": "apple, chopped" },
+      { "qty": "0.5", "unit": "tsp", "item": "cinnamon" }
+    ],
+    "steps": [
+      "Bring water and oats to a boil.",
+      "Stir in apples and cinnamon; reduce heat.",
+      "Simmer for 5-7 minutes until oats are soft."
+    ]
+  }
+]
