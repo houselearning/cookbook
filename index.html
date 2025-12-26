@@ -224,7 +224,8 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,#f3eadf, #fff);
         <div class="tags">${(r.tags||[]).slice(0,3).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
         <div class="preview-ingredients small">${(r.ingredients||[]).slice(0,3).map(i => i.whole || (i.qty+' '+(i.unit||'')+' '+(i.item||''))).join(' • ')}</div>
       `;
-      card.addEventListener('click', ()=>openModal(r));
+      // open recipe in a new tab with ?recipeID={id}
+      card.addEventListener('click', ()=> openRecipeInNewTab(r));
       grid.appendChild(card);
     });
   }
@@ -284,6 +285,19 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,#f3eadf, #fff);
   });
   modalBackdrop.addEventListener('click', (e)=> { if(e.target === modalBackdrop) closeModal.click(); });
 
+  // open recipe in a new tab with query param
+  function openRecipeInNewTab(r){
+    try{
+      const url = new URL(window.location.href);
+      url.searchParams.set('recipeID', r.id);
+      // open absolute URL in new tab
+      window.open(url.toString(), '_blank');
+    }catch(e){
+      // fallback: simple query string
+      window.open(window.location.pathname + '?recipeID=' + encodeURIComponent(r.id), '_blank');
+    }
+  }
+
   // Load from recipies.json (file must be served alongside this HTML)
   function loadRecipes(){
     fetch('recipies.json')
@@ -296,6 +310,16 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,#f3eadf, #fff);
         recipes = data.map(r => ({...r, tags: r.tags || [], id: r.id || cryptoRandomId()}));
         renderFilters();
         applyFilters();
+        // if URL contains recipeID, open that recipe's modal (useful when opened in new tab)
+        const params = new URLSearchParams(window.location.search);
+        const rid = params.get('recipeID');
+        if(rid){
+          const found = recipes.find(x=>String(x.id) === String(rid));
+          if(found) {
+            // small delay to ensure UI populated
+            setTimeout(()=> openModal(found), 120);
+          }
+        }
       })
       .catch(err => {
         console.error(err);
