@@ -1,0 +1,11 @@
+{
+  "name": "houselearning-cookbook",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Automated validation and deployment for the HouseLearning Cookbook.",
+  "scripts": {
+    "test": "node --test",
+    "validate": "node scripts/cookbook.js validate",
+    "build": "node scripts/cookbook.js build"
+  }
+}
